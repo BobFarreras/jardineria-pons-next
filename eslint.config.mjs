@@ -1,3 +1,4 @@
+// eslint.config.js
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
@@ -20,6 +21,14 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  
+  // ✅ AQUÍ AFEGIM LA REGLA PER DESACTIVAR L'ERROR DELS APÒSTROFS
+  {
+    rules: {
+      "react/no-unescaped-entities": "off",
+    },
+  },
+
 ];
 
 export default eslintConfig;
