@@ -1,0 +1,153 @@
+// src/components/sections/Contact.jsx
+"use client"; // Necessari pels estats (useState), esdeveniments (onSubmit) i el toast
+
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Mail, Phone, Send } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useToast } from "@/lib/hooks/use-toast"; // ✅ Corregim la ruta de l'import
+import { sendEmail } from '@/app/actions'; // <-- Importem la nostra Server Action
+
+const Contact = () => {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+
+    const formData = new FormData(event.currentTarget);
+    const result = await sendEmail(formData);
+
+    setIsSubmitting(false);
+
+    if (result.success) {
+      // ✅ LÍNIA CORREGIDA
+      toast("Missatge enviat!", {
+        description: "Ens posarem en contacte amb tu aviat. Gràcies per confiar en nosaltres!",
+      });
+      event.target.reset();
+    } else {
+      // ✅ LÍNIA CORREGIDA
+      toast("Error", {
+        description: "Hi ha hagut un problema en enviar el missatge. Si us plau, torna-ho a intentar.",
+        variant: "destructive",
+      });
+    }
+  };
+  return (
+    <section id="contacte" className="py-20 bg-green-50">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16 fade-in">
+          <h2 className="text-4xl font-bold text-gray-800 mb-4">Contacta amb Nosaltres</h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Estem aquí per ajudar-te a crear el jardí dels teus somnis
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="space-y-8"
+          >
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+                <Mail className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-800">Email</h3>
+                <p className="text-gray-600">jardinerpons@gmail.com</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+                <Phone className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-800">Telèfon</h3>
+                <p className="text-gray-600">615 061 164</p>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-2xl shadow-lg">
+              <h3 className="font-semibold text-gray-800 mb-4">Horaris d'Atenció</h3>
+              <div className="space-y-2 text-gray-600">
+                <p>Dilluns - Divendres: 8:00 - 18:00</p>
+                <p>Dissabte: 9:00 - 14:00</p>
+                <p>Diumenge: Tancat</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="bg-white p-8 rounded-2xl shadow-lg"
+            >
+              {/* ✅ Canviem l'event a la etiqueta form */}
+              <form onSubmit={handleSubmit} className="contact-form space-y-6">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
+                  <input
+                    type="text" id="name" name="name" required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                    placeholder="El teu nom"
+                    disabled={isSubmitting}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <input
+                    type="email" id="email" name="email" required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                    placeholder="el.teu.email@exemple.com"
+                    disabled={isSubmitting}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">Telèfon</label>
+                  <input
+                    type="tel" id="phone" name="phone"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                    placeholder="123 456 789"
+                    disabled={isSubmitting}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">Missatge</label>
+                  <textarea
+                    id="message" name="message" required rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none"
+                    placeholder="Explica'ns el teu projecte..."
+                    disabled={isSubmitting}
+                  />
+                </div>
+                
+                <Button
+                  type="submit"
+                  className="w-full gradient-bg text-white font-semibold py-3 rounded-lg"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Enviant...' : (
+                    <>
+                      <Send className="w-5 h-5 mr-2" />
+                      Enviar Missatge
+                    </>
+                  )}
+                </Button>
+              </form>
+            </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Contact;
