@@ -1,106 +1,105 @@
 // src/components/sections/Contact.jsx
-"use client"; // Necessari pels estats (useState), esdeveniments (onSubmit) i el toast
+"use client";
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Mail, Phone, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useToast } from "@/lib/hooks/use-toast"; // ✅ Corregim la ruta de l'import
-import { sendEmail } from '@/app/actions'; // <-- Importem la nostra Server Action
+import { useToast } from "@/lib/hooks/use-toast";
+import { sendEmail } from '@/app/actions';
 
 const Contact = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsSubmitting(true);
-
     const formData = new FormData(event.currentTarget);
-    const result = await sendEmail(formData);
-    // Obtenim els valors i eliminem espais en blanc innecessaris
+    
     const name = formData.get('name')?.toString().trim();
     const email = formData.get('email')?.toString().trim();
     const message = formData.get('message')?.toString().trim();
 
-    // --- ✅ NOU BLOC DE VALIDACIÓ ---
     if (!name || !email || !message) {
       toast("Camps Incomplets", {
         description: "Si us plau, omple tots els camps obligatoris per continuar.",
         variant: "destructive",
       });
-      return; // Aturem l'enviament si falten dades
+      return;
     }
+
+    setIsSubmitting(true);
+    const result = await sendEmail(formData);
     setIsSubmitting(false);
 
     if (result.success) {
-      // ✅ LÍNIA CORREGIDA
       toast("Missatge enviat!", {
-        description: "Ens posarem en contacte amb tu aviat. Gràcies per confiar en nosaltres!",
+        description: "Ens posarem en contacte amb tu aviat.",
       });
       event.target.reset();
+      setPrivacyAccepted(false);
     } else {
-      // ✅ LÍNIA CORREGIDA
       toast("Error", {
-        description: "Hi ha hagut un problema en enviar el missatge. Si us plau, torna-ho a intentar.",
+        description: "Hi ha hagut un problema en enviar el missatge.",
         variant: "destructive",
       });
     }
   };
+
   return (
     <section id="contacte" className="py-20 bg-green-50">
-       <div className="container mx-auto px-6 sm:px-12">
+      <div className="container mx-auto px-6 sm:px-8">
         <div className="text-center mb-16 fade-in">
           <h2 className="text-4xl font-bold text-gray-800 mb-4">Contacta amb Nosaltres</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Estem aquí per ajudar-te a crear el jardí dels teus somnis
           </p>
         </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-8"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
-                <Mail className="w-6 h-6 text-white" />
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="space-y-8"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+                  <Mail className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800">Email</h3>
+                  <p className="text-gray-600">jardineriapons@gmail.com</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-800">Email</h3>
-                <p className="text-gray-600">jardinerpons@gmail.com</p>
-              </div>
-            </div>
 
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
-                <Phone className="w-6 h-6 text-white" />
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+                  <Phone className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800">Telèfon</h3>
+                  <p className="text-gray-600">615 061 164</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-800">Telèfon</h3>
-                <p className="text-gray-600">615 061 164</p>
-              </div>
-            </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-lg">
-              <h3 className="font-semibold text-gray-800 mb-4">Horaris d'Atenció</h3>
-              <div className="space-y-2 text-gray-600">
-                <p>Dilluns - Divendres: 8:00 - 18:00</p>
-                <p>Dissabte: 9:00 - 14:00</p>
-                <p>Diumenge: Tancat</p>
+              <div className="bg-white p-6 rounded-2xl shadow-lg">
+                <h3 className="font-semibold text-gray-800 mb-4">Horaris d'Atenció</h3>
+                <div className="space-y-2 text-gray-600">
+                  <p>Dilluns - Divendres: 8:00 - 18:00</p>
+                  <p>Dissabte: 9:00 - 14:00</p>
+                  <p>Diumenge: Tancat</p>
+                </div>
               </div>
-            </div>
-          </motion.div>
-
-          <motion.div
+            </motion.div>
+            
+            <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               className="bg-white p-8 rounded-2xl shadow-lg"
             >
-              {/* ✅ Canviem l'event a la etiqueta form */}
               <form onSubmit={handleSubmit} className="contact-form space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
@@ -142,10 +141,28 @@ const Contact = () => {
                   />
                 </div>
                 
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="privacy"
+                    name="privacy"
+                    checked={privacyAccepted}
+                    onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                  />
+                  <label htmlFor="privacy" className="text-sm text-gray-600">
+                    He llegit i accepto la 
+                    <Link href="/politica-de-privacitat" target="_blank" className="font-semibold text-green-600 hover:underline ml-1">
+                      política de privacitat
+                    </Link>
+                    .
+                  </label>
+                </div>
+                
                 <Button
                   type="submit"
-                  className="w-full gradient-bg text-white font-semibold py-3 rounded-lg"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !privacyAccepted}
+                  className="w-full gradient-bg text-white font-semibold py-3 rounded-lg transition-opacity duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? 'Enviant...' : (
                     <>

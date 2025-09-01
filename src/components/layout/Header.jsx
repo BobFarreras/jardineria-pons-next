@@ -46,7 +46,7 @@ const Header = () => {
               <Image 
                 src={logoPons} 
                 alt="Logo de Jardineria Pons" 
-                width={40} 
+                width={66} 
                 className="h-auto rounded-full"
               />
               <span className={`text-xl font-bold ${isScrolled ? 'text-gray-800' : 'text-white'}`}>

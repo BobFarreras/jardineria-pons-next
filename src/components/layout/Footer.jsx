@@ -56,6 +56,15 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+          <div className="flex justify-center gap-6 mb-4">
+            {/* ✅ NOUS ENLLAÇOS LEGALS */}
+            <Link href="/politica-de-privacitat" className="text-sm text-gray-400 hover:text-green-400">
+              Política de Privacitat
+            </Link>
+            <Link href="/avis-legal" className="text-sm text-gray-400 hover:text-green-400">
+              Avís Legal
+            </Link>
+          </div>
           <p>&copy; {new Date().getFullYear()} Jardiner Pons. Tots els drets reservats.</p>
         </div>
       </div>
