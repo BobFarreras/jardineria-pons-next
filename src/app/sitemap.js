@@ -1,6 +1,6 @@
 // src/app/sitemap.js
 export default function sitemap() {
-    const domain = 'https://www.elteudomini.com'; // Posa el teu domini real
+    const domain = 'https://www.jardineriapons.com'; // Posa el teu domini real
   
     return [
       {
