@@ -70,7 +70,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-800">Email</h3>
-                  <p className="text-gray-600">jardineriapons@gmail.com</p>
+                  <p className="text-gray-600">jardinerpons@gmail.com</p>
                 </div>
               </div>
 
