@@ -46,9 +46,8 @@ const Header = () => {
               <Image 
                 src={logoPons} 
                 alt="Logo de Jardineria Pons" 
-                width={70} 
-                height={70} 
-                className="rounded-full" // Opcional: si vols que el logo sigui rodó
+                width={40} 
+                className="h-auto rounded-full"
               />
               <span className={`text-xl font-bold ${isScrolled ? 'text-gray-800' : 'text-white'}`}>
               

@@ -28,7 +28,7 @@ const Hero = ({ scrollToSection }) => {
           transition={{ duration: 0.8 }}
           className="text-4xl md:text-6xl font-bold mb-6 text-shadow"
         >
-          Creem i cuidem el teu jardí amb passió i la teva puta mare
+          Creem i cuidem el teu jardí amb passió
         </motion.h1>
         
         <motion.p

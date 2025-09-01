@@ -1,6 +1,7 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "Jardiner Pons - Jardineria Professional",
+  "short_name": "JardinerPons",
+  "description": "Serveis professionals de jardineria: construcció, manteniment, podes i més.",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

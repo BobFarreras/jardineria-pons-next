@@ -18,16 +18,16 @@ export const metadata = {
   },
 };
 
-// src/app/layout.js
-// ...
+
 export default function RootLayout({ children }) {
   return (
     <html lang="ca">
       <body className={inter.className}>
-        <div className="min-h-screen bg-white">
-          <Header /> {/* ❌ Sense la prop scrollToSection */}
+        {/* 👇 AFEGEIX "overflow-hidden" EN AQUEST DIV 👇 */}
+        <div className="min-h-screen bg-white overflow-hidden">
+          <Header />
           <main>{children}</main>
-          <Footer /> {/* ❌ Sense la prop scrollToSection */}
+          <Footer />
           <Toaster />
         </div>
       </body>

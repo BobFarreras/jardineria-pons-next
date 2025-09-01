@@ -18,7 +18,19 @@ const Contact = () => {
 
     const formData = new FormData(event.currentTarget);
     const result = await sendEmail(formData);
+    // Obtenim els valors i eliminem espais en blanc innecessaris
+    const name = formData.get('name')?.toString().trim();
+    const email = formData.get('email')?.toString().trim();
+    const message = formData.get('message')?.toString().trim();
 
+    // --- ✅ NOU BLOC DE VALIDACIÓ ---
+    if (!name || !email || !message) {
+      toast("Camps Incomplets", {
+        description: "Si us plau, omple tots els camps obligatoris per continuar.",
+        variant: "destructive",
+      });
+      return; // Aturem l'enviament si falten dades
+    }
     setIsSubmitting(false);
 
     if (result.success) {
@@ -37,7 +49,7 @@ const Contact = () => {
   };
   return (
     <section id="contacte" className="py-20 bg-green-50">
-      <div className="container mx-auto px-4">
+       <div className="container mx-auto px-6 sm:px-12">
         <div className="text-center mb-16 fade-in">
           <h2 className="text-4xl font-bold text-gray-800 mb-4">Contacta amb Nosaltres</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
