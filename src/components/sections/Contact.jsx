@@ -1,51 +1,56 @@
 // src/components/sections/Contact.jsx
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Mail, Phone, Send } from 'lucide-react';
+import { Mail, Phone, Send, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/lib/hooks/use-toast";
-import { sendEmail } from '@/app/actions';
+import emailjs from '@emailjs/browser'; // ✅ Importem EmailJS
 
 const Contact = () => {
   const { toast } = useToast();
+  const form = useRef(); // Creem una referència per al formulari
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    
-    const name = formData.get('name')?.toString().trim();
-    const email = formData.get('email')?.toString().trim();
-    const message = formData.get('message')?.toString().trim();
 
-    if (!name || !email || !message) {
-      toast("Camps Incomplets", {
-        description: "Si us plau, omple tots els camps obligatoris per continuar.",
+    // Validació del client
+    if (!privacyAccepted) {
+      toast("Política de Privacitat", {
+        description: "Has d'acceptar la política de privacitat per enviar el missatge.",
         variant: "destructive",
       });
       return;
     }
-
+    
     setIsSubmitting(true);
-    const result = await sendEmail(formData);
-    setIsSubmitting(false);
 
-    if (result.success) {
-      toast("Missatge enviat!", {
-        description: "Ens posarem en contacte amb tu aviat.",
+    // ✅ Lògica d'enviament amb EmailJS
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+    emailjs.sendForm(serviceId, templateId, form.current, publicKey)
+      .then(() => {
+          toast("Missatge enviat!", {
+            description: "Gràcies per contactar. Ens posarem en contacte amb tu aviat.",
+          });
+          form.current.reset();
+          setPrivacyAccepted(false);
+      }, (error) => {
+          console.error('FAILED...', error.text);
+          toast("Error", {
+            description: "Hi ha hagut un problema en enviar el missatge. Si us plau, torna-ho a intentar.",
+            variant: "destructive",
+          });
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
-      event.target.reset();
-      setPrivacyAccepted(false);
-    } else {
-      toast("Error", {
-        description: "Hi ha hagut un problema en enviar el missatge.",
-        variant: "destructive",
-      });
-    }
   };
 
   return (
@@ -100,81 +105,60 @@ const Contact = () => {
               transition={{ duration: 0.6 }}
               className="bg-white p-8 rounded-2xl shadow-lg"
             >
-              <form onSubmit={handleSubmit} className="contact-form space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
-                  <input
-                    type="text" id="name" name="name" required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                    placeholder="El teu nom"
-                    disabled={isSubmitting}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                  <input
-                    type="email" id="email" name="email" required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                    placeholder="el.teu.email@exemple.com"
-                    disabled={isSubmitting}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">Telèfon</label>
-                  <input
-                    type="tel" id="phone" name="phone"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                    placeholder="123 456 789"
-                    disabled={isSubmitting}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">Missatge</label>
-                  <textarea
-                    id="message" name="message" required rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none"
-                    placeholder="Explica'ns el teu projecte..."
-                    disabled={isSubmitting}
-                  />
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="privacy"
-                    name="privacy"
-                    checked={privacyAccepted}
-                    onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-                  />
-                  <label htmlFor="privacy" className="text-sm text-gray-600">
-                    He llegit i accepto la 
-                    <Link href="/politica-de-privacitat" target="_blank" className="font-semibold text-green-600 hover:underline ml-1">
-                      política de privacitat
-                    </Link>
-                    .
-                  </label>
-                </div>
-                
-                <Button
-                  type="submit"
-                  disabled={isSubmitting || !privacyAccepted}
-                  className="w-full gradient-bg text-white font-semibold py-3 rounded-lg transition-opacity duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? 'Enviant...' : (
-                    <>
-                      <Send className="w-5 h-5 mr-2" />
-                      Enviar Missatge
-                    </>
-                  )}
-                </Button>
-              </form>
-            </motion.div>
+              {/* ✅ Afegim la ref al formulari i canviem onSubmit */}
+              <form ref={form} onSubmit={handleSubmit} className="contact-form space-y-6">
+                        <div>
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
+                            <input type="text" id="name" name="name" required disabled={isSubmitting} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="El teu nom" />
+                        </div>
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="email" name="email" required disabled={isSubmitting} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="el.teu.email@exemple.com" />
+                        </div>
+                        <div>
+                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">Telèfon</label>
+                            <input type="tel" id="phone" name="phone" disabled={isSubmitting} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="123 456 789" />
+                        </div>
+                        <div>
+                            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">Missatge</label>
+                            <textarea id="message" name="message" required rows={4} disabled={isSubmitting} className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none" placeholder="Explica'ns el teu projecte..."></textarea>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                           <input
+                                type="checkbox"
+                                id="privacy"
+                                name="privacy"
+                                checked={privacyAccepted}
+                                onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                                className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                           />
+                           <label htmlFor="privacy" className="text-sm text-gray-600">
+                               He llegit i accepto la 
+                               <Link href="/politica-de-privacitat" target="_blank" className="font-semibold text-green-600 hover:underline ml-1">
+                                   política de privacitat
+                               </Link>
+                               .
+                           </label>
+                        </div>
+                        
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting || !privacyAccepted}
+                            className="w-full gradient-bg text-white font-semibold py-3 rounded-lg transition-opacity duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                           {isSubmitting ? (
+                             <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviant...</>
+                           ) : (
+                             <>
+                               <Send className="w-5 h-5 mr-2" />
+                               Enviar Missatge
+                             </>
+                           )}
+                        </Button>
+                    </form>
+                </motion.div>
+            </div>
         </div>
-      </div>
     </section>
   );
 };

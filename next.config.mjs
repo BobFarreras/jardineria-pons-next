@@ -1,4 +1,6 @@
-/** @type {import('next').NextConfig} */
+/*
+Aixo es per a Vercel!
+/** @type {import('next').NextConfig} 
 const nextConfig = {
     images: {
       remotePatterns: [
@@ -18,4 +20,20 @@ const nextConfig = {
     },
   };
 
+export default nextConfig; 
+*/
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // ✅ Activa l'exportació estàtica
+  output: 'export',
+
+  // ✅ Desactiva l'optimització d'imatges en temps real
+  // i permet utilitzar imatges externes sense configuració addicional.
+  images: {
+    unoptimized: true,
+  },
+};
+
+// Ara (sintaxi moderna - ES Modules)
 export default nextConfig;
